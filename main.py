@@ -8,6 +8,7 @@ from typing import Dict, List, Tuple, Union
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import integrate
+from scipy.stats import rice
 
 # Counting methods
 METHOD_MANUAL = 0
@@ -186,6 +187,70 @@ def save_pdf_and_cdf_plot_from_pdf(
     else:
         plt.close()
 
+
+def create_rice_plot(
+        nu,
+        variance,
+        num_points=1000,
+        x_range=(-6,6),
+        display: bool = False,
+        file_name: str = "rice_from_formula.png"
+):
+    """
+    Create a Rice distribution plot given Z mean and variance.
+
+    Parameters:
+    -----------
+    z_mean : float
+        Mean value of Z (non-centrality parameter)
+    variance : float
+        Variance of the distribution
+    num_points : int
+        Number of points for plotting
+    x_range : tuple
+        (min, max) range for x-axis
+
+    Returns:
+    --------
+    fig, ax : matplotlib figure and axis objects
+    """
+    if x_range is None:
+        return
+
+    # Calculate sigma (scale parameter) from variance
+    sigma = np.sqrt(variance)
+
+    # non-centrality parameter
+    nu = nu
+
+    # Create x range for plotting
+    x = np.linspace(x_range[0], x_range[1], num_points)
+
+    # Calculate PDF values
+    pdf = rice.pdf(x, nu / sigma, scale=sigma)
+
+    # Create plot
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(x, pdf, 'b-', lw=2, label='Rice Distribution')
+    ax.fill_between(x, pdf, alpha=0.3)
+
+    # Add vertical line for nu
+    ax.axvline(x=nu, color='r', linestyle='--', label='nu')
+
+    # Customize plot
+    ax.set_title(f'Rice Distribution (nu mean={nu:.2f}, variance={variance:.2f})')
+    ax.set_xlabel('x')
+    ax.set_ylabel('Probability Density')
+    ax.grid(True, alpha=0.3)
+    ax.legend()
+
+    plt.savefig(file_name)
+    if display:
+        plt.show()
+    else:
+        plt.close()
+
+
 def fz_function(x: float, y: float) -> np.ndarray:
     return np.sqrt(x ** 2 + y ** 2)
 
@@ -293,6 +358,7 @@ def main():
         file_name="rice_pdf_and_cdf_plot_03_07_mean.png",
     )
 
+# --------------------------------------------------------------------------------------------------------
     random_floats_with_mean1 = generate_random_floats_with_mean(mean=1.5)
     random_floats_with_mean2 = generate_random_floats_with_mean(mean=1.1)
     fz_values = fz_wrapper(random_floats_with_mean1, random_floats_with_mean2)
@@ -305,6 +371,19 @@ def main():
         file_name="rice_pdf_and_cdf_plot_11_15_mean.png",
     )
 
+# --------------------------------------------------------------------------------------------------------
+    random_floats_with_mean1 = generate_random_floats_with_mean(mean=0.2)
+    random_floats_with_mean2 = generate_random_floats_with_mean(mean=3)
+    fz_values = fz_wrapper(random_floats_with_mean1, random_floats_with_mean2)
+    counted_values = count_values_by_method(fz_values, method=METHOD_COUNTER_CLASS, x_range=(-4, 9))
+    display_results(counted_values)
+
+    save_pdf_and_cdf_plot_from_pdf(
+        counted_values,
+        display=True,
+        file_name="rice_pdf_and_cdf_plot_02_30_mean.png",
+    )
+# --------------------------------------------------------------------------------------------------------
     random_floats_with_mean1 = generate_random_floats_with_mean(mean=2)
     random_floats_with_mean2 = generate_random_floats_with_mean(mean=3)
     fz_values = fz_wrapper(random_floats_with_mean1, random_floats_with_mean2)
@@ -318,16 +397,21 @@ def main():
         file_name="rice_pdf_and_cdf_plot_20_30_mean.png",
     )
 
-    random_floats_with_mean1 = generate_random_floats_with_mean(mean=0.2)
-    random_floats_with_mean2 = generate_random_floats_with_mean(mean=3)
-    fz_values = fz_wrapper(random_floats_with_mean1, random_floats_with_mean2)
-    counted_values = count_values_by_method(fz_values, method=METHOD_COUNTER_CLASS, x_range=(-4, 9))
-    display_results(counted_values)
-
-    save_pdf_and_cdf_plot_from_pdf(
-        counted_values,
+    # Create Rice function using the mean and variance to compare with the results
+    create_rice_plot(
+        nu = np.sqrt( 2 ** 2 + 3 ** 2),
+        variance = 1,
+        x_range=(-4, 9),
+        display=True
+    )
+# --------------------------------------------------------------------------------------------------------
+    # Create Rayleigh function with variance 1 from Rice function using the mean and variance to compare with the results
+    create_rice_plot(
+        nu = 0,
+        variance = 1,
+        x_range=(-4, 9),
         display=True,
-        file_name="rice_pdf_and_cdf_plot_02_30_mean.png",
+        file_name="rayleigh_pdf_from_rice.png"
     )
 
 if __name__ == "__main__":
