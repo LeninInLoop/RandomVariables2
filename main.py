@@ -197,12 +197,12 @@ def create_rice_plot(
         file_name: str = "rice_from_formula.png"
 ):
     """
-    Create a Rice distribution plot given Z mean and variance.
+    Create a Rice distribution plot given nu mean and variance.
 
     Parameters:
     -----------
-    z_mean : float
-        Mean value of Z (non-centrality parameter)
+    nu : float
+        (Mean value of X)^2 + (Mean value of Y)^2 (non-centrality parameter)
     variance : float
         Variance of the distribution
     num_points : int
@@ -214,19 +214,11 @@ def create_rice_plot(
     --------
     fig, ax : matplotlib figure and axis objects
     """
-    if x_range is None:
-        return
 
     # Calculate sigma (scale parameter) from variance
     sigma = np.sqrt(variance)
-
-    # non-centrality parameter
-    nu = nu
-
-    # Create x range for plotting
     x = np.linspace(x_range[0], x_range[1], num_points)
 
-    # Calculate PDF values
     pdf = rice.pdf(x, nu / sigma, scale=sigma)
 
     # Create plot
