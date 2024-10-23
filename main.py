@@ -213,7 +213,7 @@ def main():
 
 #--------------------------------------------------------------------------------------------------------
     # fz function is sqrt of x ** 2 + y ** 2
-    # it gives us the rayleigh pdf function
+    # it gives us the rayleigh pdf function, variance = 1
     fz_values = fz_wrapper(random_floats_with_mean_zero1, random_floats_with_mean_zero2)
     counted_values = count_values_by_method(fz_values, method=METHOD_COUNTER_CLASS, x_range=(-6, 6))
     display_results(counted_values)
@@ -224,10 +224,35 @@ def main():
         file_name="rayleigh_pdf_and_cdf_plot.png",
     )
 
+    # --------------------------------------------------------------------------------------------------------
+    # fz function is sqrt of x ** 2 + y ** 2
+    # it gives us the rayleigh pdf function, variance = 0.5
+    fz_values = fz_wrapper(random_floats_with_mean_zero1 * np.array(0.5), random_floats_with_mean_zero2 * np.array(0.5))
+    counted_values = count_values_by_method(fz_values, method=METHOD_COUNTER_CLASS, x_range=(-6, 6))
+    display_results(counted_values)
+
+    save_pdf_and_cdf_plot_from_pdf(
+        counted_values,
+        display=True,
+        file_name="rayleigh_pdf_and_cdf_plot_05.png",
+    )
+
+    # --------------------------------------------------------------------------------------------------------
+    # fz function is sqrt of x ** 2 + y ** 2
+    # it gives us the rayleigh pdf function, variance = 4
+    fz_values = fz_wrapper(random_floats_with_mean_zero1 * np.array(4), random_floats_with_mean_zero2 * np.array(4))
+    counted_values = count_values_by_method(fz_values, method=METHOD_COUNTER_CLASS, x_range=(0, 15))
+    display_results(counted_values)
+
+    save_pdf_and_cdf_plot_from_pdf(
+        counted_values,
+        display=True,
+        file_name="rayleigh_pdf_and_cdf_plot_40.png",
+    )
 # --------------------------------------------------------------------------------------------------------
     # we generate randn floats but with a mean value added to them,
     # we're plotting the output of the function to show that it's a normal pdf with the desired mean.
-    random_floats_with_mean1 = generate_random_floats_with_mean(mean=1.3)
+    random_floats_with_mean1 = generate_random_floats_with_mean(mean=1.1)
     random_floats_with_mean2 = generate_random_floats_with_mean(mean=0.3)
 
     counted_values = count_values_by_method(random_floats_with_mean1, method=METHOD_COUNTER_CLASS, x_range=(-6, 6))
@@ -236,7 +261,7 @@ def main():
     save_pdf_and_cdf_plot_from_pdf(
         counted_values,
         display=True,
-        file_name="randn_pdf_and_cdf_plot_03_13_mean.png",
+        file_name="randn_pdf_and_cdf_plot_11_mean.png",
     )
 
 # --------------------------------------------------------------------------------------------------------
@@ -248,7 +273,7 @@ def main():
     save_pdf_and_cdf_plot_from_pdf(
         counted_values,
         display=True,
-        file_name="rice_pdf_and_cdf_plot_03_20_mean.png",
+        file_name="rice_pdf_and_cdf_plot_03_11_mean.png",
     )
 
 # --------------------------------------------------------------------------------------------------------
@@ -286,6 +311,7 @@ def main():
     counted_values = count_values_by_method(fz_values, method=METHOD_COUNTER_CLASS, x_range=(-4, 9))
     display_results(counted_values)
 
+    print("Mean Values Rice 2 and 3 = " + str(np.mean(fz_values)))
     save_pdf_and_cdf_plot_from_pdf(
         counted_values,
         display=True,
